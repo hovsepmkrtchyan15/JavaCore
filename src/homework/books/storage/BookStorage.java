@@ -1,6 +1,6 @@
-package homework.books;
+package homework.books.storage;
 
-import homework.students.Student;
+import homework.books.model.Book;
 
 public class BookStorage {
     private Book[] array = new Book[10];
@@ -28,9 +28,10 @@ public class BookStorage {
         }
         array = temp;
     }
+
     public void printBooksByAuthorName(String authorName) {
         for (int i = 0; i < size; i++) {
-            if (array[i].getAutorName().equals(authorName)) {
+            if (array[i].getAuthor().equals(authorName)) {
                 System.out.println(array[i]);
             }
         }
@@ -59,9 +60,8 @@ public class BookStorage {
         }
         if (priceMatch == 0) {
             System.out.println("Sorry, not book at this price");
-
         }
 
-    }
 
+    }
 }
