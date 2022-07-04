@@ -6,6 +6,7 @@ import homework.books.model.Book;
 import homework.books.storage.AuthorStorage;
 import homework.books.storage.BookStorage;
 import homework.students.model.Lesson;
+import homework.books.exception.AuthorNotFoundException;
 
 import java.util.Scanner;
 
@@ -24,7 +25,13 @@ public class BookDemo implements Commands {
 
         while (run) {
             Commands.printCommands();
-            command = Integer.parseInt(scanner.nextLine());
+            try {
+                command = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please input correct commands");
+                command = -1;
+            }
+
             switch (command) {
                 case EXIT:
                     run = false;
@@ -37,7 +44,6 @@ public class BookDemo implements Commands {
                     break;
                 case PRINT_BOOKS_BY_AUTHOR_NAME:
                     System.out.println("Please input authorname");
-
                     authorStorage.printBooksByAuthorName(scanner.nextLine().trim());
                     break;
                 case PRINT_BOOKS_BY_GENRE:
@@ -45,11 +51,7 @@ public class BookDemo implements Commands {
                     bookstorage.printBooksByGenre(scanner.nextLine().trim());
                     break;
                 case PRINT_BOOKS_BY_PRICE_RANGE:
-                    System.out.println("Please input minimum price");
-                    double min = Double.parseDouble(scanner.nextLine());
-                    System.out.println("Please input maximum price");
-                    double max = Double.parseDouble(scanner.nextLine());
-                    bookstorage.printBooksByPriceRange(min, max);
+                    printBooksByPriceRange();
                     break;
                 case ADD_AUTHOR:
                     addAuthor();
@@ -84,16 +86,10 @@ public class BookDemo implements Commands {
             System.out.println("2. FEMALE");
             int genderIndex = Integer.parseInt(scanner.nextLine());
             String gender = null;
-            switch (genderIndex) {
-                case 1:
-                    gender = "MALE";
-                    break;
-                case 2:
-                    gender = "FEMALE";
-                    break;
-                default:
-                    System.out.println("Please choose correct index!!!");
-                    addAuthor();
+            if (genderIndex == 1) {
+                gender = "MALE";
+            } else {
+                gender = "FEMAIL";
             }
             Author author = new Author(name, surname, email, gender);
             authorStorage.add(author);
@@ -106,12 +102,10 @@ public class BookDemo implements Commands {
         if (authorStorage.getSize() != 0) {
             authorStorage.print();
             System.out.println("Please choose author index");
-            int authorIndex = Integer.parseInt(scanner.nextLine());
-            Author author = authorStorage.getAuthorByIndex(authorIndex);
-            if (author == null) {
-                System.out.println("Please choose correct index!!!");
-            } else {
 
+            try {
+                int authorIndex = Integer.parseInt(scanner.nextLine());
+                Author author = authorStorage.getAuthorByIndex(authorIndex);
                 System.out.println("Please input book title");
                 String title = scanner.nextLine().trim();
                 System.out.println("Please input book price");
@@ -122,11 +116,31 @@ public class BookDemo implements Commands {
                 Book book = new Book(title, author, price, gener);
                 bookstorage.add(book);
                 System.out.println("Book created");
+
+            } catch (AuthorNotFoundException | NumberFormatException e) {
+                System.out.println("Please choose correct index");
+                addBook();
             }
+
+
         } else {
             System.out.println("not author");
+            addAuthor();
         }
 
+    }
+
+    private static void printBooksByPriceRange() {
+        System.out.println("Please input minimum price");
+        try {
+            double min = Double.parseDouble(scanner.nextLine());
+            System.out.println("Please input maximum price");
+            double max = Double.parseDouble(scanner.nextLine());
+            bookstorage.printBooksByPriceRange(min, max);
+        } catch (NumberFormatException e) {
+            System.out.println("Please input correct index");
+            printBooksByPriceRange();
+        }
     }
 }
 
