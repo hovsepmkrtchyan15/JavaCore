@@ -1,4 +1,7 @@
-package homework.students;
+package homework.students.storage;
+
+import homework.students.model.Lesson;
+import homework.students.model.Student;
 
 public class StudentStorage {
     private Student[] array = new Student[10];
@@ -12,6 +15,7 @@ public class StudentStorage {
         array[size++] = student;
 
     }
+
     public void print() {
         for (int i = 0; i < size; i++) {
             System.out.println(i + ". " + array[i]);
@@ -47,16 +51,17 @@ public class StudentStorage {
     }
 
     public int getSize() {
+
         return size;
     }
 
-    public void setFirstLessonByNewLesson(int index, String lesson) {
+
+
+    public Student getStudentByIndex(int index) {
         if (index < 0 || index >= size) {
-            System.out.println("invalid index");
-        } else {
-            array[index].setLesson(lesson);
-
+            return null;
         }
-
+        return array[index];
     }
+
 }

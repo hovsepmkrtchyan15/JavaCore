@@ -5,9 +5,10 @@ import homework.books.model.Author;
 import homework.books.model.Book;
 import homework.books.storage.AuthorStorage;
 import homework.books.storage.BookStorage;
-import homework.students.model.Lesson;
 import homework.books.exception.AuthorNotFoundException;
+import homework.books.bookEnum.Gender;
 
+import java.util.Locale;
 import java.util.Scanner;
 
 public class BookDemo implements Commands {
@@ -19,6 +20,8 @@ public class BookDemo implements Commands {
 
 
     public static void main(String[] args) {
+
+        logIn();
 
         int command;
         boolean run = true;
@@ -69,6 +72,22 @@ public class BookDemo implements Commands {
 
     }
 
+    private static void logIn() {
+        final String USERNAME = "admin";
+        final String PASSWORD = "12345";
+        System.out.println("Please input your username");
+        String name = scanner.nextLine();
+        System.out.println("Please input password");
+        String pass = scanner.nextLine();
+        if (name.equals(USERNAME) && pass.equals(PASSWORD)) {
+            addBook();
+        } else {
+            System.out.println("Invalid username or password!!!");
+            logIn();
+        }
+
+    }
+
     private static void addAuthor() {
         System.out.println("Please input author name");
         String name = scanner.nextLine().trim();
@@ -81,15 +100,17 @@ public class BookDemo implements Commands {
             addAuthor();
         } else {
 
-            System.out.println("Please choose author gender by index");
-            System.out.println("1. MALE");
-            System.out.println("2. FEMALE");
-            int genderIndex = Integer.parseInt(scanner.nextLine());
-            String gender = null;
-            if (genderIndex == 1) {
-                gender = "MALE";
-            } else {
-                gender = "FEMAIL";
+            System.out.println("Please choose author gender");
+            for (Gender g : Gender.values()) {
+                System.out.print(g + ", ");
+                System.out.println();
+            }
+            String gender = scanner.nextLine().trim();
+            try {
+                Gender g = Gender.valueOf(gender.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Please choose correct gender");
+                addAuthor();
             }
             Author author = new Author(name, surname, email, gender);
             authorStorage.add(author);
