@@ -8,11 +8,14 @@ public class Book {
     private int count;
     private String genre;
 
-    public Book(String title, Author author, double price, String genre) {
+    private User registeredUser;
+
+    public Book(String title, Author author, double price, String genre, User registeredUser) {
         this.title = title;
         this.author = author;
         this.price = price;
         this.genre = genre;
+        this.registeredUser = registeredUser;
 
     }
 
@@ -64,10 +67,19 @@ public class Book {
     public String toString() {
         return "Book{" +
                 "title='" + title + '\'' +
-                ", author=" + author.getName() +
+                ", author=" + author +
                 ", price=" + price +
                 ", count=" + count +
                 ", genre='" + genre + '\'' +
+                ", registeredUser=" + registeredUser.getName() +
                 '}';
+    }
+
+    public User getRegisteredUser() {
+        return registeredUser;
+    }
+
+    public void setRegisteredUser(User registeredUser) {
+        this.registeredUser = registeredUser;
     }
 }

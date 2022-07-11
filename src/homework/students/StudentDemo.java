@@ -4,8 +4,12 @@ import homework.students.command.Commands;
 import homework.students.exception.LessonNotFoundException;
 import homework.students.model.Lesson;
 import homework.students.model.Student;
+import homework.students.model.User;
+import homework.students.model.UserType;
 import homework.students.storage.LessonStorage;
 import homework.students.storage.StudentStorage;
+import homework.students.storage.UserStorage;
+
 
 import java.util.Scanner;
 
@@ -15,22 +19,137 @@ public class StudentDemo implements Commands {
     private static StudentStorage studentStorage = new StudentStorage();
     private static LessonStorage lessonStorage = new LessonStorage();
 
-    public static void main(String[] args) {
-        Lesson java = new Lesson("java", "teacher", 7, 899);
-        Lesson mysql = new Lesson("mysql", "teacher", 7, 899);
-        Lesson php = new Lesson("php", "teacher", 7, 899);
-        lessonStorage.add(java);
-        lessonStorage.add(mysql);
-        lessonStorage.add(php);
+    private static UserStorage userStorage = new UserStorage();
 
-        studentStorage.add(new Student("poxos", "poxosyan", 32, "878787", "Gyumri", java));
-        studentStorage.add(new Student("petros", "petrosyan", 42, "879887", "Gyumri", php));
-        studentStorage.add(new Student("martiros", "martirosyan", 26, "34347", "Gyumri", mysql));
+    private static User currentUser = null;
+
+
+    public static void main(String[] args) {
+        initData();
 
         boolean run = true;
         while (run) {
-            Commands.printCommands();
-            int command = Integer.parseInt(scanner.nextLine());
+            Commands.printloginCommands();
+            int command;
+            try {
+                command = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                command = -1;
+            }
+            switch (command) {
+                case 0:
+                    run = false;
+                    break;
+                case LOGIN:
+                    login();
+                    break;
+                case REGISTER:
+                    register();
+                    break;
+                default:
+                    System.out.println("Invalid command");
+                    break;
+
+            }
+        }
+    }
+
+    private static void login() {
+        System.out.println("Please input email, password");
+        String emailPasswordStr = scanner.nextLine();
+        String[] emailPassword = emailPasswordStr.split(",");
+        User user = userStorage.getUserByEmail(emailPassword[0]);
+        if (user == null) {
+            System.out.println("user wite " + emailPassword[0] + " dose not exsists!");
+        } else {
+            if (user.getPassword().equals(emailPassword[1])) {
+                currentUser = user;
+                if (user.getUserType() == UserType.ADMIN) {
+                    loginAdmin();
+                } else {
+                    if (user.getUserType() == UserType.USER) {
+                        loginUser();
+                    }
+
+                }
+            }
+        }
+    }
+
+    private static void loginUser() {
+        System.out.println("Welcom " + currentUser.getName());
+        boolean run = true;
+        while (run) {
+            Commands.printUserCommands();
+            int command;
+            try {
+                command = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                command = -1;
+            }
+
+            switch (command) {
+                case EXIT:
+                    run = false;
+                    break;
+                case ADD_STUDENT:
+                    addStudent();
+                    break;
+                case PRINT_ALL_STUDENTS:
+                    studentStorage.print();
+                    break;
+                case PRINT_STUDENTS_BY_LESSON:
+                    printStudentsByLessonName();
+                    break;
+                case PRINT_STUDENT_COUNT:
+                    System.out.println("students count: " + studentStorage.getSize());
+                    break;
+                case PRINT_ALL_LESSON:
+                    lessonStorage.print();
+                    break;
+                default:
+                    System.out.println("Invalid command");
+                    break;
+            }
+        }
+    }
+
+
+    private static void register() {
+        System.out.println("Please input name, surname, email, password");
+        String userDataStr = scanner.nextLine();
+        String[] userData = userDataStr.split(",");
+        if (userData.length < 4) {
+            System.out.println("please input correct data");
+        } else {
+            if (userStorage.getUserByEmail(userData[2]) == null) {
+                User user = new User();
+                user.setName(userData[0]);
+                user.setSurname(userData[1]);
+                user.setEmail(userData[2]);
+                user.setPassword(userData[3]);
+                user.setUserType(UserType.USER);
+                userStorage.add(user);
+                System.out.println("User created!");
+            } else {
+                System.out.println("user wite " + userData[2] + " already exsists!");
+            }
+        }
+
+    }
+
+    private static void loginAdmin() {
+        System.out.println("Welcom " + currentUser.getName());
+        boolean run = true;
+        while (run) {
+            Commands.printAdminCommands();
+            int command;
+            try {
+                command = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                command = -1;
+            }
+
             switch (command) {
                 case EXIT:
                     run = false;
@@ -65,6 +184,21 @@ public class StudentDemo implements Commands {
                     break;
             }
         }
+    }
+
+    private static void initData() {
+        User admin = new User("admin", "admin", "admin@mail.com", "admin", UserType.ADMIN);
+        userStorage.add(admin);
+        Lesson java = new Lesson("java", "teacher", 7, 899);
+        Lesson mysql = new Lesson("mysql", "teacher", 7, 899);
+        Lesson php = new Lesson("php", "teacher", 7, 899);
+        lessonStorage.add(java);
+        lessonStorage.add(mysql);
+        lessonStorage.add(php);
+
+        studentStorage.add(new Student("poxos", "poxosyan", 32, "878787", "Gyumri", java, admin));
+        studentStorage.add(new Student("petros", "petrosyan", 42, "879887", "Gyumri", php, admin));
+        studentStorage.add(new Student("martiros", "martirosyan", 26, "34347", "Gyumri", mysql, admin));
     }
 
     private static void addLesson() {
@@ -148,7 +282,7 @@ public class StudentDemo implements Commands {
                 System.out.println("Please input student's city");
                 String city = scanner.nextLine();
 
-                Student student = new Student(name, surname, age, phoneNumber, city, lesson );
+                Student student = new Student(name, surname, age, phoneNumber, city, lesson, currentUser);
                 studentStorage.add(student);
                 System.out.println("student created");
             } catch (LessonNotFoundException | NumberFormatException e) {
