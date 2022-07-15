@@ -12,7 +12,7 @@ import homework.books.bookEnum.Gender;
 import homework.books.storage.UserStorage;
 import java.util.Scanner;
 
-public class BookDemo implements Commands {
+public class BookDemo implements  Commands {
 
     private static Scanner scanner = new Scanner(System.in);
     private static BookStorage bookstorage = new BookStorage();
@@ -125,7 +125,7 @@ public class BookDemo implements Commands {
                     bookstorage.print();
                     break;
                 case PRINT_BOOKS_BY_AUTHOR_NAME:
-                    System.out.println("Please input authorname");
+                    System.out.println("Please input author name");
                     authorStorage.printBooksByAuthorName(scanner.nextLine().trim());
                     break;
                 case PRINT_BOOKS_BY_GENRE:
@@ -172,7 +172,7 @@ public class BookDemo implements Commands {
                     bookstorage.print();
                     break;
                 case PRINT_BOOKS_BY_AUTHOR_NAME:
-                    System.out.println("Please input authorname");
+                    System.out.println("Please input author name");
                     authorStorage.printBooksByAuthorName(scanner.nextLine().trim());
                     break;
                 case PRINT_BOOKS_BY_GENRE:
