@@ -6,11 +6,16 @@ import java.util.Scanner;
 class FileUtil {
 
     private static Scanner scanner = new Scanner(System.in);
+    static String pathRecusion = scanner.nextLine();
+    static String fileNameRecursion = scanner.nextLine();
+    static boolean searchFileRecursion = false;
 
     public static void main(String[] args) throws IOException {
 
-        contentSearch();
+
         fileSearch();
+        fileSearchRecursion();
+        contentSearch();
         findLines();
         printSizeOfPackage();
         createFileWithContent();
@@ -28,7 +33,7 @@ class FileUtil {
         if (myfile.isDirectory()) {
             File[] files = myfile.listFiles();
             for (File file : files) {
-                if (file.getName().contains(fileName)) {
+                if (file.getName().equals(fileName.split("."))) {
                     searchFile = true;
                 }
             }
@@ -37,7 +42,37 @@ class FileUtil {
     }
 
 
-    //այս մեթոդը պետք է սքաններով վերցնի երկու string.
+    static void fileSearchRecursion() {
+        File myfile = new File(pathRecusion);
+        if (myfile.isDirectory()) {
+            File[] files = myfile.listFiles();
+            for (File file : files) {
+                recursion(file);
+            }
+        }
+        System.out.println(searchFileRecursion);
+    }
+
+    public static void recursion(File file) {
+
+        if (file.isDirectory()) {
+            File file1 = new File(file.getPath());
+            File[] files = file1.listFiles();
+            if (files != null) {
+                for (File file2 : files) {
+                    recursion(file2);
+                }
+            }
+        } else {
+            if (file.getName().equals(fileNameRecursion)) {
+                searchFileRecursion = true;
+            }
+
+        }
+
+    }
+
+//այս մեթոդը պետք է սքաններով վերցնի երկու string.
 // 1 - path թե որ ֆոլդերում ենք փնտրելու
 // 2 - keyword - ինչ որ բառ
 // Մեթոդը պետք է նշված path-ում գտնի բոլոր .txt ֆայլերը, և իրենց մեջ փնտրի
@@ -53,7 +88,7 @@ class FileUtil {
             if (file1.getName().endsWith(".txt")) {
                 try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file1.getAbsolutePath()))) {
                     String line = "";
-                    while ((line = bufferedReader.readLine()) != null){
+                    while ((line = bufferedReader.readLine()) != null) {
                         if (line.contains(keyword)) {
                             System.out.println(file1.getName());
                         }
@@ -64,7 +99,7 @@ class FileUtil {
     }
 
 
-    //այս մեթոդը պետք է սքաններով վերցնի երկու string.
+//այս մեթոդը պետք է սքաններով վերցնի երկու string.
 // 1 - txtPath txt ֆայլի փաթը
 // 2 - keyword - ինչ որ բառ
 // տալու ենք txt ֆայլի տեղը, ու ինչ որ բառ, ինքը տպելու է էն տողերը, որտեղ գտնի էդ բառը։
@@ -76,10 +111,12 @@ class FileUtil {
         File file = new File(txtPath);
         if (file.isFile()) {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(txtPath))) {
-                String len = "";
-                while ((len = bufferedReader.readLine()) != null) {
-                    if (len.contains(keyword)) {
-                        System.out.println(len);
+                String line = "";
+                int lineNum = 1;
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (line.contains(keyword)) {
+                        System.out.println(lineNum + " - " + line);
+                        lineNum++;
                     }
                 }
             }
@@ -106,7 +143,7 @@ class FileUtil {
     }
 
 
-    //այս մեթոդը պետք է սքաններով վերցնի երեք string.
+//այս մեթոդը պետք է սքաններով վերցնի երեք string.
 // 1 - path պապկի տեղը, թե որտեղ է սարքելու նոր ֆայլը
 // 2 - fileName ֆայլի անունը, թե ինչ անունով ֆայլ է սարքելու
 // 3 - content ֆայլի պարունակությունը։ Այսինքն ստեղծված ֆայլի մեջ ինչ է գրելու
@@ -117,15 +154,24 @@ class FileUtil {
         String fileName = scanner.nextLine();
         String content = scanner.nextLine();
 
-        File file = new File(path + "\\" + fileName);
-        file.createNewFile();
-        try (BufferedWriter out = new BufferedWriter(new FileWriter(file.getPath()))) {
+        File file = new File(path, fileName);
+        if (file.getParentFile().isDirectory()) {
+            if (!file.isFile()) {
+                file.createNewFile();
+                try (BufferedWriter out = new BufferedWriter(new FileWriter(file.getPath()))) {
+                    out.write(content);
+                }
 
-            out.write(content);
-
+            } else {
+                System.out.println("fail this name already exists");
+            }
+        } else {
+            System.out.println("not folder under this name");
         }
+
     }
 }
+
 
 
 
