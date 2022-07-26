@@ -1,6 +1,7 @@
 package homework.students;
 
 import homework.students.command.Commands;
+import homework.students.dateUtil.DateUtil;
 import homework.students.exception.LessonNotFoundException;
 import homework.students.model.Lesson;
 import homework.students.model.Student;
@@ -11,7 +12,10 @@ import homework.students.storage.StudentStorage;
 import homework.students.storage.UserStorage;
 
 
+import java.util.Date;
 import java.util.Scanner;
+
+import static homework.students.dateUtil.DateUtil.*;
 
 public class StudentDemo implements Commands {
 
@@ -189,16 +193,16 @@ public class StudentDemo implements Commands {
     private static void initData() {
         User admin = new User("admin", "admin", "admin@mail.com", "admin", UserType.ADMIN);
         userStorage.add(admin);
-        Lesson java = new Lesson("java", "teacher", 7, 899);
-        Lesson mysql = new Lesson("mysql", "teacher", 7, 899);
-        Lesson php = new Lesson("php", "teacher", 7, 899);
+        Lesson java = new Lesson("java", "teacher", 7, 899, stringToDate("06.05.2022"));
+        Lesson mysql = new Lesson("mysql", "teacher", 7, 899, stringToDate("06.06.2022"));
+        Lesson php = new Lesson("php", "teacher", 7, 899, stringToDate("06.07.2022"));
         lessonStorage.add(java);
         lessonStorage.add(mysql);
         lessonStorage.add(php);
 
-        studentStorage.add(new Student("poxos", "poxosyan", 32, "878787", "Gyumri", java, admin));
-        studentStorage.add(new Student("petros", "petrosyan", 42, "879887", "Gyumri", php, admin));
-        studentStorage.add(new Student("martiros", "martirosyan", 26, "34347", "Gyumri", mysql, admin));
+        studentStorage.add(new Student("poxos", "poxosyan", 32, "878787", "Gyumri", java, admin, new Date()));
+        studentStorage.add(new Student("petros", "petrosyan", 42, "879887", "Gyumri", php, admin, new Date()));
+        studentStorage.add(new Student("martiros", "martirosyan", 26, "34347", "Gyumri", mysql, admin, new Date()));
     }
 
     private static void addLesson() {
@@ -210,9 +214,12 @@ public class StudentDemo implements Commands {
         int duration = Integer.parseInt(scanner.nextLine());
         System.out.println("Please input lesson price");
         double price = Double.parseDouble(scanner.nextLine());
+        System.out.println("Plaese input date (15.03.2022)");
+        String dateStr = scanner.nextLine();
 
-        Lesson lesson = new Lesson(lessonName, teacherName, duration, price);
+        Lesson lesson = new Lesson(lessonName, teacherName, duration, price, stringToDate(dateStr) );
         lessonStorage.add(lesson);
+
         System.out.println("lesson created!");
     }
 
@@ -282,7 +289,7 @@ public class StudentDemo implements Commands {
                 System.out.println("Please input student's city");
                 String city = scanner.nextLine();
 
-                Student student = new Student(name, surname, age, phoneNumber, city, lesson, currentUser);
+                Student student = new Student(name, surname, age, phoneNumber, city, lesson, currentUser, new Date());
                 studentStorage.add(student);
                 System.out.println("student created");
             } catch (LessonNotFoundException | NumberFormatException e) {

@@ -1,5 +1,11 @@
 package homework.students.model;
 
+import homework.students.dateUtil.DateUtil;
+
+import java.util.Date;
+
+import static homework.students.dateUtil.DateUtil.*;
+
 public class Student {
 
     private String name;
@@ -10,6 +16,7 @@ public class Student {
     private Lesson lesson;
 
     private User registeredUser;
+    private Date registerDate;
 
     public User getRegisteredUser() {
         return registeredUser;
@@ -19,7 +26,8 @@ public class Student {
         this.registeredUser = registeredUser;
     }
 
-    public Student(String name, String surname, int age, String phoneNumber, String city, Lesson lesson, User registeredUser) {
+    public Student(String name, String surname, int age, String phoneNumber, String city,
+                   Lesson lesson, User registeredUser, Date registerDate) {
         this.name = name;
         this.surname = surname;
         this.age = age;
@@ -27,6 +35,7 @@ public class Student {
         this.city = city;
         this.lesson = lesson;
         this.registeredUser = registeredUser;
+        this.registerDate = registerDate;
     }
 
     public String getName() {
@@ -78,6 +87,14 @@ public class Student {
         this.lesson = lesson;
     }
 
+    public Date getRegisterDate() {
+        return registerDate;
+    }
+
+    public void setRegisterDate(Date registerDate) {
+        this.registerDate = registerDate;
+    }
+
     @Override
     public String toString() {
         return "Student{" +
@@ -88,7 +105,9 @@ public class Student {
                 ", city='" + city + '\'' +
                 ", lesson=" + lesson +
                 ", registeredUser=" + registeredUser +
+                ", registerDate=" + dateToSrting(registerDate) +
                 '}';
     }
 }
+
 
